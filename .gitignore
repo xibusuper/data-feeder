@@ -1,0 +1,18 @@
+# 依赖
+node_modules/
+
+# 本地环境配置（含密钥，禁止提交）
+.env
+
+# 日志
+*.log
+logs/
+
+# 运行时产物
+.pid
+
+# 编辑器/系统
+.DS_Store
+.idea/
+.vscode/
+*.swp

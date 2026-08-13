@@ -1,0 +1,39 @@
+# TradingView 指标数据采集客户端 - Docker Compose 编排
+#
+# 用法：
+#   1. 复制 .env.example 为 .env 并填写 API_KEY / TV_DATA_ID
+#   2. docker compose up -d            # 后台启动
+#   3. docker compose logs -f          # 查看日志
+#   4. docker compose down             # 停止
+#
+# 说明：
+#   - 通过 .env 文件注入配置（与本地运行一致）
+#   - restart: unless-stopped 保证容器异常退出后自动拉起
+#   - 容器内访问宿主机后端，API_URL 用 host.docker.internal（Linux 需加 extra_hosts）
+#   - 如后端也是容器，建议放入同一 docker 网络并用服务名访问
+
+services:
+  data-client:
+    build: .
+    image: tradingbot-data-client:latest
+    container_name: tradingbot-data-client
+    restart: unless-stopped
+    # 通过 .env 文件注入环境变量
+    env_file:
+      - .env
+    # 也可用 environment 覆盖单项（优先级高于 env_file）
+    # 注意：默认 API_URL 已写死为 https://trader.aigcplus.vip，本地调试可覆盖
+    # environment:
+    #   API_URL: http://host.docker.internal:7000  # 本地后端调试时覆盖
+    #   API_KEY: your_api_key
+    #   TV_DATA_ID: "1"
+    #   PRICE_PRECISION: "2"
+    # Linux 下访问宿主机需要额外解析 host.docker.internal
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    # 采集客户端为长驻进程，日志通过 docker logs 查看
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"

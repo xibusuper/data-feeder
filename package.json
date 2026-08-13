@@ -1,0 +1,20 @@
+{
+  "name": "tradingbot-client",
+  "version": "1.0.0",
+  "description": "TradingView 指标数据采集客户端（通过开放接口获取配置）",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "help": "node index.js -h"
+  },
+  "keywords": ["tradingview", "indicator", "client"],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@mathieuc/tradingview": "github:Mathieu2301/TradingView-API",
+    "dotenv": "^17.4.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
