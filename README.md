@@ -8,9 +8,10 @@
 
 ```
 data_client/
-├── index.js                # 采集客户端主程序（命令行入口）
+├── clients/
+│   └── tv-indicator.js     # TradingView 指标采集（多周期共振 v2.0）— 命令行入口
 ├── lib/
-│   └── OpenApiClient.js    # 开放平台 API 封装类（fetchTvData/writeTvDataList/reportStatus）
+│   └── OpenApiClient.js    # 开放平台 API 封装类（fetchTvData/writeTvDataList/reportStatus/fetchLastDataList/fetchDataList）
 ├── package.json
 ├── .env.example            # 配置文件模板（复制为 .env 使用）
 ├── .gitignore
@@ -89,19 +90,24 @@ npm install
 
 ```bash
 # 方式一：全部从 .env 读取（需在 .env 中填写 API_KEY 和 TV_DATA_ID）
-node index.js
+node clients/tv-indicator.js
 
 # 方式二：命令行传参（覆盖 .env 中的值）
-node index.js -k <api_key> -i <tv_data_id>
+node clients/tv-indicator.js -k <api_key> -i <tv_data_id>
 
 # 混合使用：.env 配置 API_URL，命令行传入 api_key 和 tv_data_id
-node index.js -k abc123def456 -i 1
+node clients/tv-indicator.js -k abc123def456 -i 1
+
+# 方式三：通过 npm script（等价于方式一）
+npm start
 ```
 
 ### 查看帮助
 
 ```bash
-node index.js -h
+node clients/tv-indicator.js -h
+# 或
+npm run help
 ```
 
 ## 运行方式二：Docker 运行（推荐生产环境）
@@ -194,6 +200,12 @@ await client.writeTvDataList({
 
 // 3. 上报运行状态（0=停止, 1=运行中, 2=异常）
 await client.reportStatus(1, 1, '');
+
+// 4. 获取最后一条数据记录（无数据时返回空对象）
+const last = await client.fetchLastDataList(1);
+
+// 5. 获取最近若干条记录（默认 10 条，最大 100 条，按 id 降序）
+const list = await client.fetchDataList(1, 10);
 ```
 
 ## 工作流程
@@ -254,8 +266,10 @@ await client.reportStatus(1, 1, '');
 | `/api/open/tvData/:id` | `GET` | 获取数据源订阅配置 + 关联目标凭证（TV用户或交易所账号） | `OpenApiClient.fetchTvData()` |
 | `/api/open/tvDataList/write` | `POST` | 写入 K 线收盘指标数据 | `OpenApiClient.writeTvDataList()` |
 | `/api/open/tvData/:id/status` | `POST` | 上报数据源运行状态 | `OpenApiClient.reportStatus()` |
+| `/api/open/tvDataList/lastDataList` | `GET` | 获取指定数据源最后一条记录（query: `tv_data_id`） | `OpenApiClient.fetchLastDataList()` |
+| `/api/open/tvDataList/list` | `GET` | 获取指定数据源最近若干条记录（query: `tv_data_id`、`limit`，limit 1~100） | `OpenApiClient.fetchDataList()` |
 
-三个接口均需在请求头携带 `Authorization: Bearer <api_key>`。
+五个接口均需在请求头携带 `Authorization: Bearer <api_key>`。
 
 ## 容错机制
 

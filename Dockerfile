@@ -24,7 +24,7 @@ RUN groupadd --system appgroup && useradd --system --gid appgroup --create-home 
 # 拷贝已安装好的 node_modules
 COPY --from=deps /app/node_modules ./node_modules
 # 拷贝源码与配置示例
-COPY index.js ./
+COPY clients ./clients
 COPY lib ./lib
 COPY package.json ./
 COPY .env.example ./.env.example
@@ -40,4 +40,4 @@ HEALTHCHECK --interval=60s --timeout=10s --start-period=30s --retries=3 \
   CMD node -e "process.exit(0)"
 
 # 采集客户端为长驻前台进程，CMD 直接启动
-CMD ["node", "index.js"]
+CMD ["node", "clients/tv-indicator.js"]

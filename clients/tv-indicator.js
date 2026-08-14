@@ -9,12 +9,12 @@
  * 配置来源：.env 文件（API_URL / API_KEY / TV_DATA_ID），命令行参数可覆盖
  *
  * 用法：
- *   node index.js -k <api_key> -i <tv_data_id>
- *   node index.js              （全部从 .env 读取）
+ *   node clients/tv-indicator.js -k <api_key> -i <tv_data_id>
+ *   node clients/tv-indicator.js              （全部从 .env 读取）
  */
 require('dotenv').config();
 const TradingView = require('@mathieuc/tradingview');
-const { OpenApiClient } = require('./lib/OpenApiClient');
+const { OpenApiClient } = require('../lib/OpenApiClient');
 
 const TIMEFRAMES = ['cur', 'm10', 'm15', 'm30', 'h1', 'h2', 'h4', 'h8', 'h12', 'd1', 'd2', 'd3', 'd5'];
 
@@ -54,8 +54,8 @@ function printUsage() {
   console.log("TradingView 指标数据采集客户端（从开放接口获取配置）");
   console.log("");
   console.log("用法:");
-  console.log("  node index.js -k <api_key> -i <tv_data_id>");
-  console.log("  node index.js              （全部从 .env 读取）");
+  console.log("  node clients/tv-indicator.js -k <api_key> -i <tv_data_id>");
+  console.log("  node clients/tv-indicator.js              （全部从 .env 读取）");
   console.log("");
   console.log("参数（均可通过 .env 配置，命令行优先级更高）:");
   console.log("  -k, --api-key         bot_api_key 表中的 api_key");
@@ -70,8 +70,8 @@ function printUsage() {
   console.log("  PRICE_PRECISION    价格保留小数位数（默认: 2）");
   console.log("");
   console.log("示例:");
-  console.log("  node index.js -k abc123def456 -i 1");
-  console.log("  node index.js              （需在 .env 中配置 API_KEY 和 TV_DATA_ID）");
+  console.log("  node clients/tv-indicator.js -k abc123def456 -i 1");
+  console.log("  node clients/tv-indicator.js              （需在 .env 中配置 API_KEY 和 TV_DATA_ID）");
 }
 
 // ============ 开放接口调用 ============

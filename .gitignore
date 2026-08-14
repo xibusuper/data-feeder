@@ -11,6 +11,9 @@ logs/
 # 运行时产物
 .pid
 
+# 本地备忘录（不推送到远程）
+GIT-NOTES.md
+
 # 编辑器/系统
 .DS_Store
 .idea/

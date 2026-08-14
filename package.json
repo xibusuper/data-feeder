@@ -2,10 +2,11 @@
   "name": "tradingbot-client",
   "version": "1.0.0",
   "description": "TradingView 指标数据采集客户端（通过开放接口获取配置）",
-  "main": "index.js",
+  "main": "clients/tv-indicator.js",
   "scripts": {
-    "start": "node index.js",
-    "help": "node index.js -h"
+    "start": "node clients/tv-indicator.js",
+    "tv-indicator": "node clients/tv-indicator.js",
+    "help": "node clients/tv-indicator.js -h"
   },
   "keywords": ["tradingview", "indicator", "client"],
   "author": "",
