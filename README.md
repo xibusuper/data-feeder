@@ -12,6 +12,8 @@ data_client/
 │   └── tv-indicator.js     # TradingView 指标采集（多周期共振 v2.0）— 命令行入口
 ├── lib/
 │   └── OpenApiClient.js    # 开放平台 API 封装类（fetchTvData/writeTvDataList/reportStatus/fetchLastDataList/fetchDataList）
+├── mt5/
+│   └── MT5Bridge.ex5       # MT5 桥接 EA（编译后的 MQL5 专家顾问，用于中继客户端与 MT5 终端通信）
 ├── package.json
 ├── .env.example            # 配置文件模板（复制为 .env 使用）
 ├── .gitignore
@@ -283,6 +285,102 @@ const list = await client.fetchDataList(1, 10);
 
 - **本地运行**：按 `Ctrl + C` 发送 `SIGINT`，客户端清理 WebSocket 连接后退出
 - **Docker 运行**：`docker compose down` 或 `docker stop tradingbot-data-client`
+
+## MT5 桥接（MetaTrader 5 集成）
+
+### 什么是 MT5
+
+**MetaTrader 5（MT5）** 是由 MetaQuotes Software 公司开发的专业级金融交易平台，广泛应用于外汇、差价合约（CFD）、期货、股票和加密货币等市场的交易。MT5 是 MetaTrader 4 的升级版本，提供更强大的分析功能、更丰富的订单类型和更高效的执行速度。
+
+**核心特性：**
+
+- **多资产支持**：一个账户可交易外汇、股票、期货、加密货币等多种品种
+- **高级图表与分析**：内置 21 种时间周期、80+ 技术指标和多种分析工具
+- **算法交易（EA）**：支持通过 MQL5 编写的 Expert Advisor（专家顾问）实现自动交易
+- **多线程回测**：内置策略测试器，支持历史数据回测和参数优化
+- **深度市场数据**：提供 Level 2 报价、成交深度和市场情绪数据
+
+### MT5Bridge.ex5 是什么
+
+`mt5/MT5Bridge.ex5` 是一个**编译后的 MQL5 Expert Advisor（EA）文件**，作为中继客户端（Relay Client）与 MT5 终端之间的桥接程序。
+
+**工作原理（文件桥接模式）：**
+
+```
+中继客户端（Python）              MT5 终端（EA）
+       │                              │
+       │  写入 bridge_in.json         │
+       ├─────────────────────────────▶│ EA 的 OnTick/OnTimer 读取指令
+       │                              │ 执行交易（下单/平仓/查询）
+       │  读取 bridge_out.json        │
+       │◀─────────────────────────────┤ EA 将结果写入 bridge_out.json
+       │                              │
+       │  读取 bridge_status.json     │
+       │◀─────────────────────────────┤ EA 定期写入运行状态
+```
+
+**桥接文件说明：**
+
+| 文件 | 方向 | 作用 |
+|------|------|------|
+| `bridge_in.json` | Python 写 / EA 读 | 交易指令（下单、平仓、查询账户/持仓等） |
+| `bridge_out.json` | EA 写 / Python 读 | 交易执行结果（成交价、订单号、错误信息等） |
+| `bridge_status.json` | EA 写 / Python 读 | EA 运行状态（online/offline、账户信息） |
+
+> 三个文件均位于 MT5 终端的公共文件目录（Common\Files），EA 使用 `FILE_COMMON` 标志写入。
+
+### 客户如何使用 MT5
+
+如果客户希望通过 MT5 终端进行自动交易，请按以下步骤操作：
+
+#### 1. 安装 MT5 终端
+
+从 [MetaQuotes 官网](https://www.metaquotes.net/cn/metatrader5) 或客户所属券商官网下载并安装 MT5 终端。Windows 系统是 MT5 的主要支持平台。
+
+#### 2. 部署桥接 EA
+
+将 `mt5/MT5Bridge.ex5` 文件复制到 MT5 终端的 Experts（专家顾问）目录：
+
+```
+<MT5安装目录>\MQL5\Experts\
+```
+
+> 也可在 MT5 终端菜单中选择 **文件 → 打开数据文件夹**，进入 `MQL5\Experts` 目录粘贴。
+
+#### 3. 启用 EA 自动交易
+
+1. 打开 MT5 终端，在顶部工具栏确认 **算法交易**（AutoTrading）按钮已开启（绿色）
+2. 在 **导航器** 面板中找到 `Expert Advisors` 下的 `MT5Bridge`
+3. 将其拖拽到任意图表上，在弹出的对话框中：
+   - 勾选 **允许实时自动交易**（Allow live trading）
+   - 切换到 **通用** 选项卡，确认 EA 已加载
+
+#### 4. 配置中继客户端
+
+中继客户端（trader_client）启动后，会自动检测 MT5 终端的公共文件目录并建立通信：
+
+- EA 加载后会写入 `bridge_status.json` 标记为 `online`
+- 中继客户端轮询读取状态文件，确认 EA 在线后即可接收交易指令
+- 所有交易通过 SaaS 平台 → 中继客户端 → MT5Bridge EA → MT5 终端 的链路自动执行
+
+#### 5. 验证连接
+
+在 MT5 终端的 **专家** 面板中查看日志，正常启动会显示：
+
+```
+[MT5Bridge] EA 已启动
+[MT5Bridge] Common Files 路径: ...\Common\Files\
+[MT5Bridge] bridge_status.json 已写入
+```
+
+> 如需查看详细的 MT5 配置图文教程，请访问帮助中心的 [MT5 接入指南](https://help.aigcplus.vip)。
+
+### 注意事项
+
+- `MT5Bridge.ex5` 为**编译后的二进制文件**，无需安装 MQL5 编译器即可直接使用
+- 一个 MT5 终端只需挂载一个 EA 实例，可同时处理多品种交易指令
+- EA 运行期间请保持 MT5 终端登录状态，终端关闭或断线将导致交易中断
+- 建议在 MT5 终端的 **工具 → 选项 → 专家顾问** 中勾选 **允许算法交易**，并确认 DLL 导入权限设置正确
 
 ## 发布到 GitHub / Gitee（维护者参考）
 
