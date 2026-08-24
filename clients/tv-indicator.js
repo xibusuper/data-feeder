@@ -504,6 +504,12 @@ process.on('SIGINT', () => {
       await initClient(apiConfig, tvData, tvCredentials);
       break; // initClient 内部自行处理重连，不需要外层循环
     } catch (err) {
+      // 401/403 为永久性鉴权/权限错误，重试永远不会成功，直接退出
+      if (err && (err.httpStatus === 401 || err.httpStatus === 403)) {
+        console.error(`\n\x1b[31m[致命错误]\x1b[0m ${err.message}（HTTP ${err.httpStatus}）`);
+        console.error('鉴权或权限错误不可重试，请检查 -k/--api-key 是否正确、以及与 -i/--tv-data-id 归属是否一致。');
+        process.exit(1);
+      }
       console.error(`\n获取配置失败: ${err.message}，${retryDelay / 1000}秒后重试...`);
       await new Promise((r) => setTimeout(r, retryDelay));
       retryDelay = Math.min(retryDelay * 2, 60000); // 指数退避，最长 60 秒
