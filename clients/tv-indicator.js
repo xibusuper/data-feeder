@@ -357,7 +357,7 @@ async function initClient(apiConfig, tvData, tvCredentials) {
         checkDataInterval = null;
         console.log("\n=== 未获取到数据，尝试重新连接 ===");
         apiConfig.openApi.reportStatus(tvDataId, 2, '未获取到数据，超时重连');
-        setTimeout(() => initClient(apiConfig, tvData, tvUser), 5000);
+        setTimeout(() => initClient(apiConfig, tvData, tvCredentials), 5000);
         return;
       }
 
@@ -375,14 +375,14 @@ async function initClient(apiConfig, tvData, tvCredentials) {
       console.log("尝试重新连接...");
       apiConfig.openApi.reportStatus(tvDataId, 2, `WebSocket错误: ${JSON.stringify(err)}`);
       cleanupResources();
-      setTimeout(() => initClient(apiConfig, tvData, tvUser), 5000);
+      setTimeout(() => initClient(apiConfig, tvData, tvCredentials), 5000);
     });
 
   } catch (err) {
     console.error("\n初始化失败:", err.message);
     console.log("尝试重新连接...");
     apiConfig.openApi.reportStatus(tvDataId, 2, `初始化失败: ${err.message}`);
-    setTimeout(() => initClient(apiConfig, tvData, tvUser), 5000);
+    setTimeout(() => initClient(apiConfig, tvData, tvCredentials), 5000);
   }
 }
 
