@@ -123,7 +123,7 @@ function printTrendData(data, price, klineTime, precision) {
 
   console.log("\n" + "=".repeat(50));
   const localNow = new Date();
-  console.log(`K线收盘时间(TV): ${new Date(klineTime * 1000).toLocaleString()}`);
+  console.log(`已收盘K线开盘时间(TV): ${new Date(klineTime * 1000).toLocaleString()}`);
   console.log(`K线时间戳(TV): ${klineTime} (秒) | ${klineTime * 1000} (毫秒)`);
   console.log(`本地当前时间: ${localNow.toLocaleString()}`);
   console.log(`本地时间戳: ${Math.floor(localNow.getTime() / 1000)} (秒) | ${localNow.getTime()} (毫秒)`);
