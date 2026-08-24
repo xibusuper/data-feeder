@@ -22,7 +22,7 @@ services:
     env_file:
       - .env
     # 也可用 environment 覆盖单项（优先级高于 env_file）
-    # 注意：默认 API_URL 已写死为 https://trader.aigcplus.vip，本地调试可覆盖
+    # 注意：默认 API_URL 已写死为 https://traderai.vip，本地调试可覆盖
     # environment:
     #   API_URL: http://host.docker.internal:7000  # 本地后端调试时覆盖
     #   API_KEY: your_api_key

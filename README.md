@@ -61,9 +61,9 @@ cp .env.example .env
 
 ```bash
 # 开放接口地址（后端服务地址）
-# 默认写死为正式服务器：https://trader.aigcplus.vip
+# 默认写死为正式服务器：https://traderai.vip
 # Docker 运行时若后端在宿主机，可填 http://host.docker.internal:7000 覆盖
-API_URL=https://trader.aigcplus.vip
+API_URL=https://traderai.vip
 
 # 访问密钥（bot_api_key 表中的 api_key）
 # 也可通过命令行 -k 传入，命令行优先级更高
@@ -142,7 +142,7 @@ docker run -d \
   --name tradingbot-data-client \
   --restart unless-stopped \
   --add-host host.docker.internal:host-gateway \
-  -e API_URL=https://trader.aigcplus.vip \
+  -e API_URL=https://traderai.vip \
   -e API_KEY=your_api_key \
   -e TV_DATA_ID=1 \
   -e PRICE_PRECISION=2 \
@@ -159,7 +159,7 @@ docker stop tradingbot-data-client && docker rm tradingbot-data-client
 
 | 后端位置 | API_URL 取值 |
 |---------|-------------|
-| 正式服务器（默认） | `https://trader.aigcplus.vip`（已写死为默认值，无需额外配置） |
+| 正式服务器（默认） | `https://traderai.vip`（已写死为默认值，无需额外配置） |
 | 宿主机本地（非容器） | `http://host.docker.internal:7000`（Linux 需加 `--add-host host.docker.internal:host-gateway`） |
 | 同一 Docker 网络 | `http://<后端服务名>:7000`（需将本服务加入后端所在网络） |
 | 公网/远程 | 直接填公网地址 |
@@ -168,7 +168,7 @@ docker stop tradingbot-data-client && docker rm tradingbot-data-client
 
 | 来源 | 参数 | 说明 | 必填 | 默认值 |
 |------|------|------|------|--------|
-| `.env` | `API_URL` | 开放接口地址 | 否 | `https://trader.aigcplus.vip` |
+| `.env` | `API_URL` | 开放接口地址 | 否 | `https://traderai.vip` |
 | `.env` / `-k` | `API_KEY` / `--api-key` | `bot_api_key` 表中的 api_key | 是 | — |
 | `.env` / `-i` | `TV_DATA_ID` / `--tv-data-id` | `bot_tv_data` 表的自增 id（可关联 TV 用户或交易所账号） | 是 | — |
 | `.env` / `-p` | `PRICE_PRECISION` / `--price-precision` | 价格保留小数位数 | 否 | `2` |
@@ -185,7 +185,7 @@ docker stop tradingbot-data-client && docker rm tradingbot-data-client
 const { OpenApiClient } = require('./lib/OpenApiClient');
 
 const client = new OpenApiClient({
-  apiUrl: 'https://trader.aigcplus.vip',
+  apiUrl: 'https://traderai.vip',
   apiKey: 'your_api_key',
 });
 
@@ -373,7 +373,7 @@ const list = await client.fetchDataList(1, 10);
 [MT5Bridge] bridge_status.json 已写入
 ```
 
-> 如需查看详细的 MT5 配置图文教程，请访问帮助中心的 [MT5 接入指南](https://help.aigcplus.vip)。
+> 如需查看详细的 MT5 配置图文教程，请访问帮助中心的 [MT5 接入指南](https://help.traderai.vip)。
 
 ### 注意事项
 

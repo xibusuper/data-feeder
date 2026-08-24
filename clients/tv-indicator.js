@@ -28,7 +28,7 @@ let previousTime = null;
 function parseArgs() {
   const args = process.argv.slice(2);
   const config = {
-    apiUrl: process.env.API_URL || 'https://trader.aigcplus.vip',
+    apiUrl: process.env.API_URL || 'https://traderai.vip',
     apiKey: process.env.API_KEY || '',
     tvDataId: process.env.TV_DATA_ID || '',
     pricePrecision: Number(process.env.PRICE_PRECISION) || 2,
@@ -64,7 +64,7 @@ function printUsage() {
   console.log("  -d, --debug           打印指标加载的原始入参/出参（调试用）");
   console.log("");
   console.log(".env 配置项:");
-  console.log("  API_URL            开放接口地址（默认: https://trader.aigcplus.vip）");
+  console.log("  API_URL            开放接口地址（默认: https://traderai.vip）");
   console.log("  API_KEY            访问密钥");
   console.log("  TV_DATA_ID         数据源ID");
   console.log("  PRICE_PRECISION    价格保留小数位数（默认: 2）");
