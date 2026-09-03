@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node clients/tv-indicator.js",
     "tv-indicator": "node clients/tv-indicator.js",
+    "tv-indicator-kline": "node clients/tv-indicator-kline.js",
     "help": "node clients/tv-indicator.js -h"
   },
   "keywords": ["tradingview", "indicator", "client"],
